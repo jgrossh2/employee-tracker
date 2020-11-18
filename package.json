@@ -1,0 +1,30 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "express": "^4.17.1",
+    "inquirer": "^7.3.3",
+    "mysql2": "^2.2.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "migrate": "mysql db/employee.db < db/schema.sql",
+    "seed": "mysql db/employee.db < db/seeds.sql",
+    "db": "mysql db/employee.db"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgrossh2/employee-tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgrossh2/employee-tracker/issues"
+  },
+  "homepage": "https://github.com/jgrossh2/employee-tracker#readme"
+}
