@@ -8,10 +8,10 @@ const mysql = require('mysql2');
 
 //     console.log('Connected to the employee database.');
 // });
-const db = mysql.createConnection({
+const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'test'
 });
 
-module.exports = db;
+module.exports = connection;
