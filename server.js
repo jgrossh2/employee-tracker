@@ -1,7 +1,10 @@
+require('dotenv').config();
 const table = require('console.table');
 const inquire = require('inquirer');
 const express = require('express');
-const db = require('./db/database');
+const connection = require('./db/database');
+
+
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -17,8 +20,8 @@ app.use(express.json());
 app.use((req, res) => {
     res.status(404).end();
 });
-//start server after db connection
-db.on('open', () => {
+//start server after connection
+connection.on('connect', () => {
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
