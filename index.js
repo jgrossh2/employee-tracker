@@ -2,7 +2,7 @@
 const table = require('console.table');
 const inquirer = require('inquirer');
 const express = require('express');
-const db = require('./db/connection.db');
+const DB = require('./db/query')
 //function in switch case from prompt choice
 // const util = require('util');
 // const menuAsync = until.promisify(menu());
@@ -14,38 +14,38 @@ console.log(`
 ================================================`);
 menu();
 };
-async function menu() {
+function menu() {
      inquirer
     .prompt({
             type: 'list',
             name: 'menu',
             message: 'What would you like to do?',
             choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee roll' ],
-        })
-        
-        await switch(answers.menu) {
+        }).then((answers) => {
+        switch(answers.menu) {
             case 'View all departments':
-                db.viewDepartment();
+                DB.viewDepartment();
                 break;
             case 'View all roles':
-                db.viewRoles();
+                DB.viewRoles();
                 break;
             case 'View all employees':
-                db.viewEmployees();
+                DB.viewEmployees();
                 break;
             case 'Add a department':
-                db.addDepartment();
+                DB.addDepartment();
                 break;
             case 'Add a role':
-                db.addRole();
+                DB.addRole();
                 break;
             case 'Add an employee':
-                db.addEmployee();
+                DB.addEmployee();
                 break;
             case 'Update an employee role':
-                db.selectEmployee();
+                DB.selectEmployee();
                 break;
             }
+        });
 };
 start();
 

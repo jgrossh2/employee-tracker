@@ -2,7 +2,7 @@ require('dotenv').config();
 const table = require('console.table');
 const inquire = require('inquirer');
 const express = require('express');
-const connection = require('./db/connection.db');
+const connection = require('./db/connection.js');
 
 
 

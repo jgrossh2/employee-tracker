@@ -1,16 +1,19 @@
 //find all query statements
-const connection = (db/connection.db);
+const connection = ('./connection.js');
+const mysql = require('mysql2');
+
 
 class DB {
-    constructor(connection){
-        this.connection = connection;
-    }
+    // constructor(connection){
+    //     this.connection = connection;
+    // }
     //query for viewing all departments = name and id
     viewDepartment = () => {
-    connection.query('SELECT * FROM department', function(err, res) {
+    const query = connection.query('SELECT * FROM department', function(err, res) {
         if (err) throw err;
         console.log(res)
-    })
+        console.log("this" + query.sql)
+    });
     };
     //query for viewing all roles==job title, role id, department of the role and salary
     viewRoles = () => {
@@ -63,4 +66,4 @@ class DB {
     }
 }
 
-module.exports = new Db;
+module.exports = new DB;
