@@ -4,23 +4,26 @@ const inquirer = require('inquirer');
 const express = require('express');
 const db = require('./db/connection.db');
 //function in switch case from prompt choice
+// const util = require('util');
+// const menuAsync = until.promisify(menu());
 
-function beginning() {
+function start() {
 console.log(`
 ================================================
                 EMPLOYEE TRACKER
 ================================================`);
 menu();
 };
-function menu () {
-    return inquirer
+async function menu() {
+     inquirer
     .prompt({
             type: 'list',
             name: 'menu',
             message: 'What would you like to do?',
             choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee roll' ],
-        }).then(answers => {
-            switch(answers.menu) {
+        })
+        
+        await switch(answers.menu) {
             case 'View all departments':
                 db.viewDepartment();
                 break;
@@ -43,8 +46,6 @@ function menu () {
                 db.selectEmployee();
                 break;
             }
-
-    })
 };
-beginning();
+start();
 
