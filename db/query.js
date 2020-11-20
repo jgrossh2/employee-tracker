@@ -1,6 +1,7 @@
 //find all query statements
 const connection = ('./connection.js');
 const mysql = require('mysql2');
+const { concat } = require('rxjs');
 
 
 class DB {
@@ -8,8 +9,11 @@ class DB {
     //     this.connection = connection;
     // }
     //query for viewing all departments = name and id
+    //GIVES departmentID, department
+    // SELECT id, name AS department
+    // -> FROM department;
     viewDepartment = () => {
-    const query = connection.query('SELECT * FROM department', function(err, res) {
+    const query = connection.query('SELECT id, name AS department FROM department', function(err, res) {
         if (err) throw err;
         console.log(res)
         console.log("this" + query.sql)
@@ -17,15 +21,15 @@ class DB {
     };
     //query for viewing all roles==job title, role id, department of the role and salary
     viewRoles = () => {
-        connection.query('SELECT * FROM role', function(err, res) {
+        connection.query('SELECT title, role.id, name, salary FROM role LEFT JOIN department ON department.name=name') , function(err, res) {
             if (err) throw err;
             console.log(res)
-        })
+        }
     };
     //query for all employees==all data ids, first last title, departments, salaries, managers
-    //!! NEED DEPARTMENT NAME, DUPLICATE role_id and id NEED MANAGER NAMES
+    //!! NEED id NEED MANAGER NAMES
     viewEmployees = () => {
-        connection.query('SELECT employee.id, first_name, last_name, title, manager_id, salary FROM employee LEFT JOIN role     ON role_id=role.id', function(err, res) {
+        connection.query('SELECT employee.id, first_name, last_name, title, department.name, salary, manager_id FROM employee LEFT JOIN role     ON role_id=role.id LEFT JOIN department ON department.name=name', function(err, res) {
             if (err) throw err;
             console.log(res)
         })
@@ -63,6 +67,8 @@ class DB {
     //!!!! FIRST NAME AND LAST NAME ====NAME
     updateEmployee = () => {
         connection.query('UPDATE employee SET role WHERE first_name= answer ')
+        // SELECT id AS id, CONCAT(first_name, + ' ', last_name) AS name
+    // FROM employee; gives id and Employee name
     }
 }
 
