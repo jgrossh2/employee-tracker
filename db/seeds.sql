@@ -10,16 +10,18 @@ VALUES
 
 INSERT INTO role (title, salary, department_id)
 VALUES 
-    ('Director of Sales', 180,000, 10),
-    ('Lead engineer', 120,000, 11),
-    ('Financial Advisor', 100,000, 12),
-    ('Employee liason', 75,000, 13),
-    ('Product producer', 80,000, 1);
+    ('Contract review', 180, 1),
+    ('Director of Sales', 180, 2),
+    ('Lead engineer', 120, 3),
+    ('Financial Advisor', 100, 2),
+    ('Employee liason', 75, 4),
+    ('Product producer', 80, 5);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES 
-    ('Bob', 'Jones', 23, null),
-    ('Lisa', 'Smith', 34, null),
-    ('Monica', 'Otterman', 22, 12),
-    ('Katie', 'Williams', 28, null),
-    ('Johnny', 'Walker', 7, 11);
+    ('Ed', 'Pager', 1, null),
+    ('Bob', 'Jones', 2, null),
+    ('Lisa', 'Smith', 3, null),
+    ('Monica', 'Otterman',4, 2),
+    ('Katie', 'Williams', 5, null),
+    ('Johnny', 'Walker', 6, 3);
