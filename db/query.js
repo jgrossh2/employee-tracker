@@ -20,6 +20,9 @@ class DB {
     viewRoles() {
         return this.connection.promise().query('SELECT title, role.id AS role_id, name AS department, salary FROM role LEFT JOIN department ON department.id=role.department_id')
         };
+    viewExistingRoles() {
+        return this.connection.promise().query('SELECT role.title FROM role')
+    };
     
     //query for all employees==all data ids, first last title, departments, salaries, managers
     //!! NEED id NEED MANAGER NAMES
@@ -33,12 +36,13 @@ class DB {
 
     }
     //query add role==asked to add role, then asked name, salary, department for role, added to database
-    addRole = () => {
-        return this.connection.promise().query('INSERT INTO role (title, salary, department_id) VALUES (answer)')
-    }
+    // addRole(role){
+        // return this.connection.promise().query('INSERT INTO role (title, salary, department_id) SET ?', {(name: role.name, role), (salary: role.salary), (department_id: role.)}
+    // 
+// }
     //query to add employee= first last role and manager and that employee is added to database
-    addEmployee(add) {
-        connection.query('INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ?', add)
+    addEmployee() {
+        return this.connection.promise().query('INSERT INTO employee(first_name, last_name, role_id, manager_id) SET ?')
     }
     //query to select employee from list
     // selectEmployee = () => {

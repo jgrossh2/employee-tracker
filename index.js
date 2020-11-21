@@ -3,6 +3,7 @@ const table = require('console.table');
 const inquirer = require('inquirer');
 const express = require('express');
 const DB = require('./db/query');
+const { viewRoles } = require('./db/query');
 require('dotenv').config();
 
 //function in switch case from prompt choice
@@ -17,6 +18,18 @@ console.log(`
 menu();
 };
 
+DB.viewExistingRoles()
+    .then(([rows]) => {
+        let existingRoles = rows;
+        console.log("roles", existingRoles)
+        console.table(existingRoles)
+    })
+
+// DB.viewRoles()
+// .then(([rows]) =>{
+//     let existingRoles= rows;
+//     console.table(existingRoles)
+// })
 function menu() {
      inquirer
     .prompt({
@@ -30,6 +43,7 @@ function menu() {
                 DB.viewDepartment()
                 .then(([rows]) => {
                     let department= rows;
+                    console.log("department", department)
                     console.table(department);
                     menu();
                 });
@@ -57,41 +71,69 @@ function menu() {
                     name: 'departmentName',
                     message: 'Please enter the department name.'
                 })
-                .then(async (answers) => {
-                    // console.log("answers", answers)
-                    let data = await DB.addDepartment(answers);
-                    console.log("data", data)
+                .then(answers => {
+                    DB.addDepartment(answers);
                     menu();
                 })
                 .catch (err => {
                     console.log("err", err)
                 })
-                // DB.addDepartment();
                 break;
             case 'Add a role':
-                DB.viewRoles
-                inquirer.prompt([
-                    {
-                    type:'input',
-                    name: 'name',
-                    message: 'Please enter the name of the role.'    
-                },
-                { 
-                    type: 'number',
-                    name: 'salary',
-                    message: 'Please enter the salary.'
-                },
-                {
-                    type: 'list',
-                    name: 'department',
-                    message: []
-                },
-                ]).then(answers => {
-                    const role = new role(answers.name, answers.salary, answers.department)
-                    DB.addRole(role);
-                    menu();
-                })
-                    break;
+                // function createRole() {
+                let existingRoles = [];
+                DB.viewRoles() 
+                .then(([rows]) => {
+                    let existingRoles = rows
+                     console.log(existingRoles)
+                });
+                // console.log(existingRoles)
+                let role = [];
+                // inquirer.prompt([
+                //     {
+                //     type:'input',
+                //     name: 'name',
+                //     message: 'Please enter the name of the role.'    
+                // },
+                // ]).then(answers => {
+                //     role.push(answers);
+                //     console.log(role)
+                    
+                //     inquirer.prompt([
+                //     { 
+                //     type: 'input',
+                //     name: 'salary',
+                //     message: 'Please enter the salary.',
+                //     validate: salaryInput => {
+                //         if (salaryInput) {
+                //             return true;
+                //         } else {
+                //             console.log('Please enter a salary amount.')
+                //             return false;
+                //         }
+                //     }
+                // },
+                // ]).then(answers => {
+                //     role.push(answers);
+                //     console.log("role", role)
+                    
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'department',
+                            message: "Please select a department.",
+                            choices: [viewExistingRoles()]
+                        },
+                        ]).then(answers => {
+                            role.push(answers);
+                            console.log(role);
+                            // DB.addRole(role);
+                            menu();
+                        });
+                            
+                // })  
+                break;
+            // })
             case 'Add an employee':
                 inquirer.prompt([
                     {
@@ -105,19 +147,22 @@ function menu() {
                         message: "Please enter the employee's last name.",
                     },
                     {
-                        type: 'input',
+                        type: 'list',
                         name: 'role',
-                        message: "Please enter the employee's role.",
+                        message: "Please select the employee's role.",
+                        choices: []
                     },
-                    { 
-                        type: 'input',
-                        name: 'manager',
-                        message: "Please enter the employee's manager, if applicable."
-                    },
+                    // { 
+                    //     type: 'list',
+                    //     name: 'manager',
+                    //     message: "Please select the employee's manager, if applicable.",
+                    //     choices: []
+                    // },
                 ]).then(answers => {
                     console.log("answers", answers)
-                    const add = new add(answers.firstName, answers.lastName, answers.role, answers.manager)
-                    DB.addEmployee(add);
+                    const add = new add(answers.firstName, answers.lastName, answers.role)
+                    console.log("add", add)
+                    // DB.addEmployee(add);
                     menu()
                 });
                 break;
