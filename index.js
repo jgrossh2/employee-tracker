@@ -23,7 +23,7 @@ function menu() {
             type: 'list',
             name: 'menu',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee roll' ],
+            choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role' ],
         }).then((answers) => {
         switch(answers.menu) {
             case 'View all departments':
@@ -69,6 +69,7 @@ function menu() {
                 // DB.addDepartment();
                 break;
             case 'Add a role':
+                DB.viewRoles
                 inquirer.prompt([
                     {
                     type:'input',
@@ -83,7 +84,7 @@ function menu() {
                 {
                     type: 'list',
                     name: 'department',
-                    message: ['Departments']
+                    message: []
                 },
                 ]).then(answers => {
                     const role = new role(answers.name, answers.salary, answers.department)

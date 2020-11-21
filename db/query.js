@@ -18,7 +18,7 @@ class DB {
     
     //query for viewing all roles==job title, role id, department of the role and salary
     viewRoles() {
-        return this.connection.promise().query('SELECT title, role.id AS role_id, name AS department, salary FROM role LEFT JOIN department ON department.name=name')
+        return this.connection.promise().query('SELECT title, role.id AS role_id, name AS department, salary FROM role LEFT JOIN department ON department.id=role.department_id')
         };
     
     //query for all employees==all data ids, first last title, departments, salaries, managers
