@@ -13,12 +13,12 @@ class DB {
     // SELECT id, name AS department
     // -> FROM department;
     viewDepartment() {
-        return this.connection.promise().query('SELECT id, name AS department FROM department') 
+        return this.connection.promise().query('SELECT department.id, department.name FROM department') 
     };
-    
+
     //query for viewing all roles==job title, role id, department of the role and salary
     viewRoles() {
-        return this.connection.promise().query('SELECT title, role.id AS role_id, name AS department, salary FROM role LEFT JOIN department ON department.id=role.department_id')
+        return this.connection.promise().query('SELECT role.title, role.id AS role_id, name AS department, salary FROM role LEFT JOIN department ON department.id=role.department_id')
         };
     viewExistingRoles() {
         return this.connection.promise().query('SELECT role.title FROM role')
@@ -36,10 +36,10 @@ class DB {
 
     }
     //query add role==asked to add role, then asked name, salary, department for role, added to database
-    // addRole(role){
-        // return this.connection.promise().query('INSERT INTO role (title, salary, department_id) SET ?', {(name: role.name, role), (salary: role.salary), (department_id: role.)}
+    makeRole(role){
+        return this.connection.promise().query('INSERT INTO role SET ?', role);
     // 
-// }
+}
     //query to add employee= first last role and manager and that employee is added to database
     addEmployee() {
         return this.connection.promise().query('INSERT INTO employee(first_name, last_name, role_id, manager_id) SET ?')

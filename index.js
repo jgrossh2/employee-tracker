@@ -1,14 +1,10 @@
-//Inquirer prompts
+
 const table = require('console.table');
 const inquirer = require('inquirer');
 const express = require('express');
 const DB = require('./db/query');
-const { viewRoles } = require('./db/query');
+const { title } = require('process');
 require('dotenv').config();
-
-//function in switch case from prompt choice
-// const util = require('util');
-// const menuAsync = until.promisify(menu());
 
 function start() {
 console.log(`
@@ -18,18 +14,12 @@ console.log(`
 menu();
 };
 
-DB.viewExistingRoles()
-    .then(([rows]) => {
-        let existingRoles = rows;
-        console.log("roles", existingRoles)
-        console.table(existingRoles)
-    })
-
-// DB.viewRoles()
-// .then(([rows]) =>{
-//     let existingRoles= rows;
-//     console.table(existingRoles)
-// })
+// DB.viewExistingRoles()
+//     .then(([rows]) => {
+//         let existingRoles = rows;
+//         // console.log("roles", existingRoles)
+//         console.table(existingRoles)
+//     })
 function menu() {
      inquirer
     .prompt({
@@ -43,7 +33,7 @@ function menu() {
                 DB.viewDepartment()
                 .then(([rows]) => {
                     let department= rows;
-                    console.log("department", department)
+                    // console.log("department", department)
                     console.table(department);
                     menu();
                 });
@@ -80,91 +70,110 @@ function menu() {
                 })
                 break;
             case 'Add a role':
+                addRole();
                 // function createRole() {
-                let existingRoles = [];
-                DB.viewRoles() 
-                .then(([rows]) => {
-                    let existingRoles = rows
-                     console.log(existingRoles)
-                });
-                // console.log(existingRoles)
-                let role = [];
-                // inquirer.prompt([
-                //     {
-                //     type:'input',
-                //     name: 'name',
-                //     message: 'Please enter the name of the role.'    
-                // },
-                // ]).then(answers => {
-                //     role.push(answers);
-                //     console.log(role)
-                    
-                //     inquirer.prompt([
-                //     { 
-                //     type: 'input',
-                //     name: 'salary',
-                //     message: 'Please enter the salary.',
-                //     validate: salaryInput => {
-                //         if (salaryInput) {
-                //             return true;
-                //         } else {
-                //             console.log('Please enter a salary amount.')
-                //             return false;
-                //         }
-                //     }
-                // },
-                // ]).then(answers => {
-                //     role.push(answers);
-                //     console.log("role", role)
-                    
-                    inquirer.prompt([
+                function addRole() {
+                    DB.viewDepartment()
+                    .then(([rows]) => {
+                        let departments = rows;
+                        const departmentList = departments.map(({ id, name }) => ({
+                            name: name,
+                            value: id
+                        
+                        }));
+                        // console.log("list", departmentList)
+                
+                    inquirer .prompt([
+                        {
+                            type:'input',
+                            name: 'title',
+                            message: 'Please enter the name of the role.'    
+                        },
+                        {
+                            type: 'input',
+                            name: 'salary',
+                            message: 'Please enter the salary.'
+                        },
                         {
                             type: 'list',
-                            name: 'department',
+                            name: 'department_id',
                             message: "Please select a department.",
-                            choices: [viewExistingRoles()]
+                            choices: departmentList 
                         },
-                        ]).then(answers => {
-                            role.push(answers);
-                            console.log(role);
-                            // DB.addRole(role);
-                            menu();
-                        });
-                            
-                // })  
-                break;
+                        ]).then(role => {
+                            DB.makeRole(role)
+                            .then(() => console.log(`Added role ${role.title}.`))
+                            .then(() => menu());
+                        });        
+                })  
+            };
+            break;
             // })
             case 'Add an employee':
+                function addEmployee(){
+                    
+                    DB.viewManagers
+
+                
                 inquirer.prompt([
                     {
                         type: 'input',
-                        name: 'firstName',
+                        name: 'first_name',
                         message: "Please enter the employee's first name.",
                     },
                     { 
                         type: 'input',
-                        name: 'lastName',
+                        name: 'last_name',
                         message: "Please enter the employee's last name.",
                     },
-                    {
+                ])
+                    .then(res => {
+                        let firstName = res.first_name;
+                        let lastName = res.last_name;
+
+                        DB.viewRoles()
+                        .then(([rows]) => {
+                            let roles = rows;
+                            const roleList = roles.map(({ id, title }) => ({
+                                name: title,
+                             value: id
+                            }));
+                    inquirer.prompt ({
                         type: 'list',
-                        name: 'role',
+                        name: 'role_id',
                         message: "Please select the employee's role.",
-                        choices: []
-                    },
-                    // { 
-                    //     type: 'list',
-                    //     name: 'manager',
-                    //     message: "Please select the employee's manager, if applicable.",
-                    //     choices: []
-                    // },
-                ]).then(answers => {
-                    console.log("answers", answers)
-                    const add = new add(answers.firstName, answers.lastName, answers.role)
-                    console.log("add", add)
-                    // DB.addEmployee(add);
+                        choices: roleList
+                    })
+                    .then(res => {
+                        let roleId = res.roleId;
+
+                        DB.viewEmployees()
+                            .then(([rows]) => {
+                                let employees = rows;
+                                const managerList = employees.map(({ id, first_name, last_name}) => ({
+                                    name: `${first_name} ${last_name}`,
+                                    value: id
+                                }));
+                            
+                    inquirer.prompt({
+                        type: 'list',
+                        name: 'manager_id',
+                        message: "Please select the employee's manager, if applicable.",
+                        choices: managerList
+                    })
+                    .then(answers => {
+                        let employee = {
+                            manager_id: answers.manager_id,
+                            role_id: roleId,
+                            first_name: firstName,
+                            last_name: lastName
+                        }
+                    DB.addEmployee(employee);
+                
                     menu()
                 });
+            })
+        }
                 break;
                 
             case 'Update an employee role':
