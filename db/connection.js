@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
-
-//connect to database
+require('dotenv').config();
+console.log("in connection")
+// //connect to database
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -8,7 +9,9 @@ const connection = mysql.createConnection({
     database: 'employees'
 });
 connection.connect(err => {
-    if (err) throw err;
+    if (err) {
+      console.log("error", err)
+    }
     console.log('connected as id ' + connection.threadId);
   });
 
