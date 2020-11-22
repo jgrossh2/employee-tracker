@@ -17,7 +17,7 @@ function menu() {
             type: 'list',
             name: 'menu',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Delete a department', 'Add a role', 'Delete a role', 'Add an employee', 'Delete an employee', 'Update an employee role' ],
+            choices: ['View all departments', 'View all roles', 'View all employees','View employees by department', 'Add a department', 'Delete a department', 'Add a role', 'Delete a role', 'Add an employee', 'Delete an employee', 'Update an employee role' ],
         }).then((answers) => {
         switch(answers.menu) {
             case 'View all departments':
@@ -28,6 +28,9 @@ function menu() {
                 break;
             case 'View all employees':
                 allEmployees();
+                break;
+            case 'View employees by department':
+                employeesByDepartment();
                 break;
             case 'Add a department':
                 createDepartment();
@@ -77,6 +80,32 @@ function allEmployees() {
         menu();
     })
 };
+function employeesByDepartment() {
+    DB.viewDepartment()
+    .then(([rows]) => {
+        let departments = rows;
+        const departmentList = departments.map(({ id, name }) => ({
+            name: name,
+            value: id
+        }));
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'department',
+                message: 'Please select the department.',
+                choices: departmentList
+            }
+        ]).then(answers => {
+            let choice = answers.department;
+            DB.viewEmployeesDepartment(choice)
+            .then(([rows])=> {
+                let employees = rows;
+                console.table(employees)
+                menu();
+            })
+        })
+    });
+}
 function createDepartment() {
     inquirer.prompt({
         type: 'input',
@@ -282,8 +311,7 @@ function updateRoleOfEmployee() {
     },
     ]).then(answers => {
         let update = answers.employeeList
-        console.log("update", update)
-    
+
     inquirer.prompt([
         {
         type: 'list',
@@ -293,7 +321,6 @@ function updateRoleOfEmployee() {
         },
     ]).then(answers => {
         const updateRole = answers.title
-        console.log("updaterole", updateRole)
         DB.updateEmployeeRole(updateRole, update)
         console.log('Successfully updated.')
         menu()
