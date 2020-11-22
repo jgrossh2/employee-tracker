@@ -10,12 +10,12 @@ VALUES
 
 INSERT INTO role (title, salary, department_id)
 VALUES 
-    ('Contract review', 180, 1),
-    ('Director of Sales', 180, 2),
-    ('Lead engineer', 120, 3),
-    ('Financial Advisor', 100, 2),
-    ('Employee liason', 75, 4),
-    ('Product producer', 80, 5);
+    ('Contract review', 180000, 1),
+    ('Director of Sales', 180000, 2),
+    ('Lead engineer', 120000, 3),
+    ('Financial Advisor', 100000, 2),
+    ('Employee liason', 75000, 4),
+    ('Product producer', 80000, 5);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES 

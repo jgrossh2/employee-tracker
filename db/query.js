@@ -17,15 +17,15 @@ class DB {
     }
     //query for all employees==all data ids, first last title, departments, salaries, managers
     //!! NEED id NEED MANAGER NAMES
-    viewEmployees = () => {
-        return this.connection.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, manager_id FROM employee LEFT JOIN role ON role_id=role.id LEFT JOIN department ON department.id=role.department_id')
+    viewEmployees() {
+        return this.connection.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(employee.first_name, " ", employee.last_name) AS manager FROM employee LEFT JOIN role ON role_id=role.id LEFT JOIN department ON role.department_id=department.id');
     };
     //query add department==asked to add name, then added to database
     addDepartment(answers) {
         return this.connection.promise().query('INSERT INTO department SET ?', {name: answers.departmentName})
     }
     //query add role==asked to add role, then asked name, salary, department for role, added to database
-    makeRole(role){
+    makeRole(role) {
         return this.connection.promise().query('INSERT INTO role SET ?', role);
     }
     //query to add employee= first last role and manager and that employee is added to database

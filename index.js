@@ -1,9 +1,7 @@
 
 const table = require('console.table');
 const inquirer = require('inquirer');
-const express = require('express');
 const DB = require('./db/query');
-const { title } = require('process');
 require('dotenv').config();
 
 function start() {
@@ -52,7 +50,7 @@ function allDepartments() {
     .then(([rows]) => {
         let department= rows;
         // console.log("department", department)
-        console.table(department);
+        table(department);
         menu();
     });
 }
@@ -60,7 +58,7 @@ function allRoles() {
     DB.viewRoles()
     .then(([rows]) => {
         let roles = rows;
-        console.table(roles);
+        table(roles);
         menu();
     });
 }
@@ -68,7 +66,7 @@ function allEmployees() {
     DB.viewEmployees()
     .then(([rows]) => {
         let employee = rows;
-        console.table(employee)
+        table(employee)
         menu();
     })
 };
@@ -160,6 +158,7 @@ function addEmployee() {
                             name: `${first_name} ${last_name}`,
                             value: id
                         }));
+                managerList.unshift({ name: "None", value: null });    
                 
                 inquirer.prompt({
                     type: 'list',
@@ -231,4 +230,3 @@ start()
 //need to get title, department and salary for view all employees
 //connect role_id to get title department and salary
 
-//need to find manager id
