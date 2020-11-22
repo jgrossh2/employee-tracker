@@ -1,5 +1,5 @@
-
 const table = require('console.table');
+const { createPublicKey } = require('crypto');
 const inquirer = require('inquirer');
 const DB = require('./db/query');
 require('dotenv').config();
@@ -18,7 +18,7 @@ function menu() {
             type: 'list',
             name: 'menu',
             message: 'What would you like to do?',
-            choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role' ],
+            choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Delete a department', 'Add a role', 'Delete a role', 'Add an employee', 'Delete an employee', 'Update an employee role' ],
         }).then((answers) => {
         switch(answers.menu) {
             case 'View all departments':
@@ -33,11 +33,20 @@ function menu() {
             case 'Add a department':
                 createDepartment();
                 break;
+            case 'Delete a department':
+                removeDepartment();
+                break;
             case 'Add a role':
                 addRole();
                 break;
+            case 'Delete a role':
+                removeRole();
+                break;
             case 'Add an employee':
                 addEmployee();
+                break;
+            case 'Delete an employee':
+                removeEmployee();
                 break;
             case 'Update an employee role':
                 updateRoleOfEmployee();
@@ -49,8 +58,7 @@ function allDepartments() {
     DB.viewDepartment()
     .then(([rows]) => {
         let department= rows;
-        // console.log("department", department)
-        table(department);
+        console.table(department);
         menu();
     });
 }
@@ -58,7 +66,7 @@ function allRoles() {
     DB.viewRoles()
     .then(([rows]) => {
         let roles = rows;
-        table(roles);
+        console.table(roles);
         menu();
     });
 }
@@ -66,7 +74,7 @@ function allEmployees() {
     DB.viewEmployees()
     .then(([rows]) => {
         let employee = rows;
-        table(employee)
+        console.table(employee)
         menu();
     })
 };
@@ -84,6 +92,27 @@ function createDepartment() {
         console.log("err", err)
     })
     }
+function removeDepartment() {
+    DB.viewDepartment()
+    .then(([rows]) => {
+        let departments = rows;
+        const departmentList = departments.map(({ id, name }) => ({
+            name: name,
+            value: id
+        
+        }));
+    inquirer.prompt({
+        type: 'list',
+        name: 'department',
+        message: 'Select the department to delete.',
+        choices: departmentList
+    })
+    .then(res=> {
+        DB.deleteDepartment(res.department);
+        menu()
+    })
+});
+}
 function addRole() {
     DB.viewDepartment()
     .then(([rows]) => {
@@ -93,7 +122,6 @@ function addRole() {
             value: id
         
         }));
-        // console.log("list", departmentList)
     inquirer .prompt([
         {
             type:'input',

@@ -2,6 +2,7 @@ const connection = require('./connection');
 const mysql = require('mysql2');
 
 class DB {
+    //connects query to connection
     constructor(connection){
         this.connection = connection;
     }
@@ -13,24 +14,32 @@ class DB {
     viewRoles() {
         return this.connection.promise().query('SELECT role.id AS role_id, role.title, department.name AS department, salary FROM role LEFT JOIN department ON department.id=role.department_id')
         };
-    viewManagers() {
-    }
     //query for all employees==all data ids, first last title, departments, salaries, managers
     //!! NEED id NEED MANAGER NAMES
     viewEmployees() {
-        return this.connection.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(employee.first_name, " ", employee.last_name) AS manager FROM employee LEFT JOIN role ON role_id=role.id LEFT JOIN department ON role.department_id=department.id');
+        return this.connection.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id=role.id LEFT JOIN department ON role.department_id=department.id LEFT JOIN employee AS manager ON manager.id=employee.manager_id');
     };
     //query add department==asked to add name, then added to database
     addDepartment(answers) {
-        return this.connection.promise().query('INSERT INTO department SET ?', {name: answers.departmentName})
+        return this.connection.promise().query('INSERT INTO department SET ?', {name: answers.departmentName});
+    }
+    deleteDepartment(department) {
+        return this.connection.promise().query('DELETE FROM department WHERE id =? ', department);
+
     }
     //query add role==asked to add role, then asked name, salary, department for role, added to database
     makeRole(role) {
         return this.connection.promise().query('INSERT INTO role SET ?', role);
     }
+    deleteRole() {
+        return this.connection.promise().query('DELETE FROM ')
+    }
     //query to add employee= first last role and manager and that employee is added to database
     addNewEmployee(employee) {
         return this.connection.promise().query('INSERT INTO employee SET ?', employee);
+    }
+    deleteEmployee() {
+        return this.connection.prmoise().query('')
     }
     //value obj in inquirer, name goes to user, value is your return
     //query to update an employee role=employee to update and their new role and updated to database
