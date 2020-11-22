@@ -1,5 +1,4 @@
 const table = require('console.table');
-const { createPublicKey } = require('crypto');
 const inquirer = require('inquirer');
 const DB = require('./db/query');
 require('dotenv').config();
@@ -86,6 +85,7 @@ function createDepartment() {
     })
     .then(answers => {
         DB.addDepartment(answers);
+        console.log(`{answers} is added to departments.`)
         menu();
     })
     .catch (err => {
@@ -109,6 +109,7 @@ function removeDepartment() {
     })
     .then(res=> {
         DB.deleteDepartment(res.department);
+        console.log('Successfully deleted this department.')
         menu()
     })
 });
@@ -140,12 +141,34 @@ function addRole() {
             choices: departmentList 
         },
         ]).then(role => {
-            DB.makeRole(role)
-            .then(() => console.log(`Added role ${role.title}.`))
-            .then(() => menu());
+            DB.makeRole(role);
+            console.log(`Added role ${role.title}.`)
+            menu();
         });        
 })  
 };
+function removeRole() {
+    DB.viewRoles()
+    .then(([rows]) => {
+        let role = rows;
+        const roleList = role.map(({ role_id, title }) => ({
+            name: title,
+            value: role_id
+        }));
+        inquirer.prompt([
+            {
+            type: 'list',
+            name: 'title',
+            message: 'Please select the role you want to delete.',
+            choices: roleList
+            },
+            ]).then(answers => {
+                DB.deleteRole(answers.title)
+                console.log("Successfully deleted this role.")
+                menu()
+                })
+            });
+}
 function addEmployee() {
     inquirer.prompt([
             {
@@ -166,18 +189,20 @@ function addEmployee() {
             DB.viewRoles()
             .then(([rows]) => {
                 let roles = rows;
-                const roleList = roles.map(({ id, title }) => ({
+                const roleList = roles.map(({ role_id, title }) => ({
                     name: title,
-                    value: id
+                    value: role_id
                 }));
-                inquirer.prompt ({
+                inquirer.prompt([
+                    {
                     type: 'list',
                     name: 'role_id',
                     message: "Please select the employee's role.",
                     choices: roleList
-                })
+                    },
+                ])
                 .then(res => {
-                    let roleId = res.roleId;
+                    let roleId = res.role_id;
 
                 DB.viewEmployees()
                     .then(([rows]) => {
@@ -187,13 +212,14 @@ function addEmployee() {
                             value: id
                         }));
                 managerList.unshift({ name: "None", value: null });    
-                
+                DB.findDepartmentSalary(roleId)
                 inquirer.prompt({
                     type: 'list',
                     name: 'manager_id',
                     message: "Please select the employee's manager, if applicable.",
                     choices: managerList
                 })
+
                 .then(answers => {
                     let employee = {
                         manager_id: answers.manager_id,
@@ -210,20 +236,42 @@ function addEmployee() {
     });
 });
 };
-
+function removeEmployee() {
+    DB.viewEmployees()
+    .then(([rows]) => {
+        let employee = rows;
+        const employees = employee.map(({ first_name, last_name, id }) => ({
+            name: `${first_name} ${last_name}`,
+            value: id
+        }));
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'name',
+                message: 'Please select the employee to delete from the database.',
+                choices: employees
+            }
+        ]).then(answers => {
+            DB.deleteEmployee(answers.name)
+            console.log('Successfully deleted from the database.');
+            menu()
+        })
+    })
+}
 function updateRoleOfEmployee() {
     DB.viewEmployees()
     .then(([rows]) => {
         let names = rows;
-        const name = names.map(({ first_name, last_name }) => ({
-            name: `${first_name} ${last_name}`
+        const name = names.map(({ first_name, last_name, id }) => ({
+            name: `${first_name} ${last_name}`,
+            value: id
         }));
     DB.viewRoles()
     .then(([rows]) => {
         let roles = rows;
-        const roleList = roles.map(({ id, title }) => ({
+        const roleList = roles.map(({ role_id, title }) => ({
             name: title,
-            value: id
+            value: role_id
         }));
     inquirer.prompt([
     {
@@ -234,18 +282,20 @@ function updateRoleOfEmployee() {
     },
     ]).then(answers => {
         let update = answers.employeeList
+        console.log("update", update)
     
     inquirer.prompt([
         {
         type: 'list',
-        name: 'roleList',
+        name: 'title',
         message: "Please select the employee's role.",
         choices: roleList
         },
     ]).then(answers => {
-        const updateRole = answers.roleList
-        DB.updateEmployeeRole(update, updateRole)
-        console.log(`${first_name} ${last_name} has been updated.`)
+        const updateRole = answers.title
+        console.log("updaterole", updateRole)
+        DB.updateEmployeeRole(updateRole, update)
+        console.log('Successfully updated.')
         menu()
         });
     });
@@ -255,6 +305,4 @@ function updateRoleOfEmployee() {
 
 start()
 
-//need to get title, department and salary for view all employees
-//connect role_id to get title department and salary
 
