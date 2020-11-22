@@ -114,7 +114,7 @@ function createDepartment() {
     })
     .then(answers => {
         DB.addDepartment(answers);
-        console.log(`{answers} is added to departments.`)
+        console.log('Successfully added the department.')
         menu();
     })
     .catch (err => {
@@ -128,7 +128,6 @@ function removeDepartment() {
         const departmentList = departments.map(({ id, name }) => ({
             name: name,
             value: id
-        
         }));
     inquirer.prompt({
         type: 'list',
